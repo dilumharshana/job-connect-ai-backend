@@ -1,2 +1,6 @@
 openai
 python-dotenv
+flask
+flask_cors
+sharpapi
+genai

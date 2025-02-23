@@ -1,15 +1,15 @@
 from flask import Flask, request, jsonify
 from sharpapi import SharpApiService
 from flask_cors import CORS  # Import CORS
-from openai import OpenAI
 import os
 import google.generativeai as genai
 from quiz_prompt import prompt_text
 from answer_prompt import answer_prompt
 
 
+sharp_api = SharpApiService(api_key="UvizKo42mpx6ieSVOv3cdM4WidlyKmbyYCAJVnYH");
+
 app = Flask(__name__)
-sharp_api = SharpApiService(api_key="UvizKo42mpx6ieSVOv3cdM4WidlyKmbyYCAJVnYH")
 CORS(app)
 
 
@@ -19,6 +19,7 @@ openaiKey = "sk-proj-JNxacNZax8A02p_AHCE75Rsg_W3XaOmr-bctysHnrsp26BmosEYjywJlTyr
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    print("routed")
     try:
         # Check if a file is included in the request
         if 'file' not in request.files:
@@ -44,7 +45,7 @@ def upload_file():
 
         quiz = chat(str(result)).replace("```json", "").replace("```", "")
         print(quiz)
-        return jsonify({"message": "File processed successfully", "data": quiz})
+        return jsonify({"message": "File processed successfully", "data": {"quiz":quiz, "cvData":result}})
     except Exception as e:
         print(e)
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
@@ -59,6 +60,7 @@ def chat(data):
     response = model.generate_content(prompt)
     return response.text
 
+
 @app.route('/submit-answers', methods=['POST'])
 def report():
     # print("request.json =>", request.json['cvData']['data'])
@@ -71,4 +73,4 @@ def report():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
